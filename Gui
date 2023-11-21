@@ -1,0 +1,141 @@
+(function() {
+    'use strict';
+
+    // Define your custom keywords and corresponding websites
+    const customKeywords = {
+        'discord': 'https://www.discord.com',
+        'twitch': 'https://www.twitch.tv',
+        'roblox': 'https://www.roblox.com',
+        'gc': 'https://www.classroom.google.com',
+        'gd': 'https://www.docs.google.com',
+        // Add more keywords and websites as needed
+    };
+
+    // Create the popup HTML
+    const popupHTML = `
+        <iframe id="customPopup" style="display: none; position: fixed; top: 10px; right: 10px; z-index: 9999; border: none;"></iframe>
+    `;
+
+    // Add the popup HTML to the document body
+    document.body.insertAdjacentHTML('beforeend', popupHTML);
+
+    // Access the contentDocument and contentWindow of the iframe
+    const popupIframe = document.getElementById('customPopup');
+    const popupDocument = popupIframe.contentDocument;
+    const popupWindow = popupIframe.contentWindow;
+
+    // Define the popup content
+    const popupContent = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Custom Popup</title>
+            <style>
+                body {
+                    margin: 0;
+                    font-family: Arial, sans-serif;
+                }
+                #popupContainer {
+                    display: flex;
+                    flex-direction: column;
+                    padding: 10px;
+                    background-color: #87CEEB;
+                    border-radius: 5px;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                }
+                #popupInput {
+                    margin-bottom: 5px;
+                    padding: 5px;
+                    background-color: white;
+                    color: black;
+                    border: none;
+                    border-radius: 5px;
+                    border-bottom: 1px solid #ccc;
+                }
+                #popupInput::placeholder {
+                    color: black;
+                    opacity: 0.5;
+                }
+                #popupButton {
+                    background-color: black;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    padding: 5px;
+                    cursor: pointer;
+                }
+            </style>
+        </head>
+        <body>
+            <div id="popupContainer">
+                <input type="text" id="popupInput" placeholder="By Fiber | \` For Keywords">
+                <button id="popupButton">Go</button>
+            </div>
+        </body>
+        </html>
+    `;
+
+    // Write the content into the iframe
+    popupDocument.open();
+    popupDocument.write(popupContent);
+    popupDocument.close();
+
+    // Function to open a website based on the entered keyword
+    const openWebsite = (keyword) => {
+        const lowercaseKeyword = keyword.toLowerCase();
+        const website = customKeywords[lowercaseKeyword];
+        if (website) {
+            window.location.href = website; // Open in the same tab
+        } else {
+            alert('Keyword not found!');
+        }
+    };
+
+    // Add event listener to the document for the '=' key (case-insensitive)
+    document.addEventListener('keydown', (event) => {
+        if (event.key.toLowerCase() === '=') {
+            popupIframe.style.display = (popupIframe.style.display === 'none') ? 'block' : 'none';
+        }
+        // Check for backtick key
+        if (event.key === '`') {
+            displayAllKeywords();
+        }
+    });
+
+    // Add event listener to the Go button for website navigation
+    popupDocument.getElementById('popupButton').addEventListener('click', () => {
+        const keyword = popupDocument.getElementById('popupInput').value;
+        openWebsite(keyword);
+    });
+
+    // Add event listener to the Enter key for website navigation
+    popupDocument.getElementById('popupInput').addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            const keyword = popupDocument.getElementById('popupInput').value;
+            openWebsite(keyword);
+        }
+    });
+
+    // Function to display all keywords in a new tab
+    const displayAllKeywords = () => {
+        const keywordsList = Object.entries(customKeywords)
+            .map(([keyword, website]) => `<strong>${keyword}:</strong> <a href="${website}" target="_blank">${website}</a>`)
+            .join('<br>');
+        const displayKeywordsWindow = window.open('', '_blank');
+        displayKeywordsWindow.document.write(`
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Keyword Library</title>
+            </head>
+            <body>
+                ${keywordsList}
+            </body>
+            </html>
+        `);
+        displayKeywordsWindow.document.close();
+    };
+})();
