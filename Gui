@@ -1,4 +1,4 @@
-(function() {
+javascript:(function() {
     'use strict';
 
     // Define your custom keywords and corresponding websites
@@ -8,12 +8,14 @@
         'roblox': 'https://www.roblox.com',
         'gc': 'https://www.classroom.google.com',
         'gd': 'https://www.docs.google.com',
+        'reload': 'reload', // Added reload keyword
+        'back': 'back', // Added back keyword
         // Add more keywords and websites as needed
     };
 
     // Create the popup HTML
     const popupHTML = `
-        <iframe id="customPopup" style="display: none; position: fixed; top: 10px; right: 10px; z-index: 9999; border: none;"></iframe>
+        <iframe id="customPopup" style="display: none; position: fixed; top: 10px; right: 10px; z-index: 9999999999 !important; border: none;"></iframe>
     `;
 
     // Add the popup HTML to the document body
@@ -44,6 +46,7 @@
                     background-color: #87CEEB;
                     border-radius: 5px;
                     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                    z-index: 9999999999 !important;
                 }
                 #popupInput {
                     margin-bottom: 5px;
@@ -86,7 +89,11 @@
     const openWebsite = (keyword) => {
         const lowercaseKeyword = keyword.toLowerCase();
         const website = customKeywords[lowercaseKeyword];
-        if (website) {
+        if (website === 'reload') {
+            location.reload(); // Reload the page
+        } else if (website === 'back') {
+            window.history.back(); // Go back to the previous page
+        } else if (website) {
             window.location.href = website; // Open in the same tab
         } else {
             alert('Keyword not found!');
